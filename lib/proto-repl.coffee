@@ -142,6 +142,7 @@ module.exports = ProtoRepl =
       'proto-repl:print-var-code': => @printVarCode()
       'proto-repl:list-ns-vars': => @listNsVars()
       'proto-repl:list-ns-vars-with-docs': => @listNsVarsWithDocs()
+      'proto-repl:resolve-namespace': => @resolveNamespace()
       'proto-repl:open-file-containing-var': => @openFileContainingVar()
       'proto-repl:interrupt': => @interrupt()
       'proto-repl:autoeval-file': => @autoEvalCurrent()
@@ -686,6 +687,26 @@ module.exports = ProtoRepl =
                       (println \"------------------------------\")))"
 
           @executeCodeInNs(code)
+
+  resolveNamespace: (options={})->
+    if editor = atom.workspace.getActiveTextEditor()
+      variable = @getClojureVarUnderCursor(editor)
+      namespace = variable.replace(/\/.*/, '')
+      text = "(if-let [ns (or (get (ns-aliases *ns*) '#{namespace}) (find-ns '#{namespace}))] (ns-name ns))"
+
+      range = editor.getSelectedBufferRange()
+      range.end.column = Infinity
+
+      @executeCodeInNs text,
+        displayInRepl: false
+        inlineOptions:
+          editor: editor
+          range: range
+        resultHandler: (result)->
+          if result.value
+            atom.workspace.notificationManager.addInfo(result.value)
+          else
+            @stderr("Could not resolve namespace alias: #{namespace}")
 
   # Opens the file containing the currently selected var or namespace in the REPL. If the file is located
   # inside of a jar file it will decompress the jar file then open it. It will first check to see if a

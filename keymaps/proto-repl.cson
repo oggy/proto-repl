@@ -33,6 +33,7 @@
   'ctrl-alt-, c': 'proto-repl:print-var-code'
   'ctrl-alt-, n': 'proto-repl:list-ns-vars'
   'ctrl-alt-< n': 'proto-repl:list-ns-vars-with-docs'
+  'ctrl-alt-, v': 'proto-repl:resolve-namespace'
   'ctrl-alt-, o': 'proto-repl:open-file-containing-var'
   'ctrl-shift-c': 'proto-repl:interrupt'
   'shift-enter': 'proto-repl:execute-text-entered-in-repl'
