@@ -781,6 +781,10 @@ module.exports = ProtoRepl =
                 [file, line] = @parseEdn(result.value)
                 file = file.replace(/%20/g, " ")
                 atom.workspace.open(file, {initialLine: line-1, searchAllPanes: true})
+              else if result.error
+                cleanError = result.error.replace(/^Execution error.*\n/, '')
+                message = if cleanError? then cleanError else result.error
+                atom.workspace.notificationManager.addInfo(message)
               else
                 @stderr("Error trying to open: #{result.error}")
 
